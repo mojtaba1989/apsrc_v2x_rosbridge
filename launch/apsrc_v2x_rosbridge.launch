@@ -1,0 +1,5 @@
+<launch>
+  <node pkg="apsrc_v2x_rosbridge" type="apsrc_v2x_rosbridge_node" name="apsrc_v2x_rosbridge" output="screen" />
+
+  <rosparam command="load" file="$(find apsrc_v2x_rosbridge)/config/params.yaml" />
+</launch>
