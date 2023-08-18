@@ -20,7 +20,28 @@ public:
 private:
   // Init
   virtual void onInit();
+  void loadParams();
 
+  // Nodehandles
+  ros::NodeHandle nh_, pnh_;
+
+  // Publisher
+  ros::Publisher bsm_pub_;
+  ros::Publisher spat_pub_;
+  ros::Publisher map_pub_;
+
+  // Util
+  bool startServer();
+
+  // Internal State
+  AS::Network::UDPServer udp_server_;
+  std::thread udp_server_thread_;
+  bool udp_server_running_ = false;
+
+  // Params
+  std::string server_ip_;
+  int server_port_;
+  
 };
 }
 #endif // APSRC_V2X_ROSBRIDGENL_H
