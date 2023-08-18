@@ -1,0 +1,9 @@
+<library path="lib/libapsrc_v2x_rosbridge_nodelets">
+  <class name="apsrc_v2x_rosbridge/apsrc_v2x_rosbridge_nodelet"
+         type="apsrc_v2x_rosbridge::ApsrcV2xRosBridgeNl" 
+         base_class_type="nodelet::Nodelet">
+    <description> 
+      Cohda V2X Rosbridge 
+    </description>
+  </class>
+</library>
