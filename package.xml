@@ -25,6 +25,9 @@
   <depend>roslint</depend>
   <depend>geometry_msgs</depend>
   <depend>std_msgs</depend>
+  <depend>asnj2735</depend>
+  <depend>asn1609dot2</depend>
+
 
 
   <!-- The export tag contains other, unspecified, tags -->
