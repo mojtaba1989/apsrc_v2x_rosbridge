@@ -1,0 +1,306 @@
+ASN_MODULE_SRCS=	\
+	SignedDataPayload.c	\
+	Ieee1609Dot2Data.c	\
+	Ieee1609Dot2Content.c	\
+	SignedData.c	\
+	SignerIdentifier.c	\
+	ToBeSignedData.c	\
+	HashedData.c	\
+	HeaderInfo.c	\
+	MissingCrlIdentifier.c	\
+	Countersignature.c	\
+	EncryptedData.c	\
+	RecipientInfo.c	\
+	SequenceOfRecipientInfo.c	\
+	PreSharedKeyRecipientInfo.c	\
+	SymmRecipientInfo.c	\
+	PKRecipientInfo.c	\
+	EncryptedDataEncryptionKey.c	\
+	SymmetricCiphertext.c	\
+	AesCcmCiphertext.c	\
+	Certificate.c	\
+	SequenceOfCertificate.c	\
+	CertificateBase.c	\
+	CertificateType.c	\
+	ImplicitCertificate.c	\
+	ExplicitCertificate.c	\
+	IssuerIdentifier.c	\
+	ToBeSignedCertificate.c	\
+	CertificateId.c	\
+	LinkageData.c	\
+	EndEntityType.c	\
+	PsidGroupPermissions.c	\
+	SequenceOfPsidGroupPermissions.c	\
+	SubjectPermissions.c	\
+	VerificationKeyIndicator.c	\
+	Uint3.c	\
+	Uint8.c	\
+	Uint16.c	\
+	Uint32.c	\
+	Uint64.c	\
+	SequenceOfUint8.c	\
+	SequenceOfUint16.c	\
+	Opaque.c	\
+	HashedId10.c	\
+	HashedId8.c	\
+	HashedId3.c	\
+	SequenceOfHashedId3.c	\
+	Time32.c	\
+	Time64.c	\
+	ValidityPeriod.c	\
+	Duration.c	\
+	GeographicRegion.c	\
+	CircularRegion.c	\
+	RectangularRegion.c	\
+	SequenceOfRectangularRegion.c	\
+	PolygonalRegion.c	\
+	TwoDLocation.c	\
+	IdentifiedRegion.c	\
+	SequenceOfIdentifiedRegion.c	\
+	CountryOnly.c	\
+	CountryAndRegions.c	\
+	CountryAndSubregions.c	\
+	RegionAndSubregions.c	\
+	SequenceOfRegionAndSubregions.c	\
+	ThreeDLocation.c	\
+	Latitude.c	\
+	Longitude.c	\
+	Elevation.c	\
+	NinetyDegreeInt.c	\
+	KnownLatitude.c	\
+	UnknownLatitude.c	\
+	OneEightyDegreeInt.c	\
+	KnownLongitude.c	\
+	UnknownLongitude.c	\
+	ElevInt.c	\
+	Signature.c	\
+	EcdsaP256Signature.c	\
+	EcdsaP384Signature.c	\
+	EccP256CurvePoint.c	\
+	EccP384CurvePoint.c	\
+	SymmAlgorithm.c	\
+	HashAlgorithm.c	\
+	EciesP256EncryptedKey.c	\
+	EncryptionKey.c	\
+	PublicEncryptionKey.c	\
+	BasePublicEncryptionKey.c	\
+	PublicVerificationKey.c	\
+	SymmetricEncryptionKey.c	\
+	PsidSsp.c	\
+	SequenceOfPsidSsp.c	\
+	Psid.c	\
+	SequenceOfPsid.c	\
+	ServiceSpecificPermissions.c	\
+	BitmapSsp.c	\
+	PsidSspRange.c	\
+	SequenceOfPsidSspRange.c	\
+	SspRange.c	\
+	BitmapSspRange.c	\
+	SequenceOfOctetString.c	\
+	SubjectAssurance.c	\
+	CrlSeries.c	\
+	IValue.c	\
+	Hostname.c	\
+	LinkageValue.c	\
+	GroupLinkageValue.c	\
+	LaId.c	\
+	LinkageSeed.c
+
+ASN_MODULE_HDRS=	\
+	SignedDataPayload.h	\
+	Ieee1609Dot2Data.h	\
+	Ieee1609Dot2Content.h	\
+	SignedData.h	\
+	SignerIdentifier.h	\
+	ToBeSignedData.h	\
+	HashedData.h	\
+	HeaderInfo.h	\
+	MissingCrlIdentifier.h	\
+	Countersignature.h	\
+	EncryptedData.h	\
+	RecipientInfo.h	\
+	SequenceOfRecipientInfo.h	\
+	PreSharedKeyRecipientInfo.h	\
+	SymmRecipientInfo.h	\
+	PKRecipientInfo.h	\
+	EncryptedDataEncryptionKey.h	\
+	SymmetricCiphertext.h	\
+	AesCcmCiphertext.h	\
+	Certificate.h	\
+	SequenceOfCertificate.h	\
+	CertificateBase.h	\
+	CertificateType.h	\
+	ImplicitCertificate.h	\
+	ExplicitCertificate.h	\
+	IssuerIdentifier.h	\
+	ToBeSignedCertificate.h	\
+	CertificateId.h	\
+	LinkageData.h	\
+	EndEntityType.h	\
+	PsidGroupPermissions.h	\
+	SequenceOfPsidGroupPermissions.h	\
+	SubjectPermissions.h	\
+	VerificationKeyIndicator.h	\
+	Uint3.h	\
+	Uint8.h	\
+	Uint16.h	\
+	Uint32.h	\
+	Uint64.h	\
+	SequenceOfUint8.h	\
+	SequenceOfUint16.h	\
+	Opaque.h	\
+	HashedId10.h	\
+	HashedId8.h	\
+	HashedId3.h	\
+	SequenceOfHashedId3.h	\
+	Time32.h	\
+	Time64.h	\
+	ValidityPeriod.h	\
+	Duration.h	\
+	GeographicRegion.h	\
+	CircularRegion.h	\
+	RectangularRegion.h	\
+	SequenceOfRectangularRegion.h	\
+	PolygonalRegion.h	\
+	TwoDLocation.h	\
+	IdentifiedRegion.h	\
+	SequenceOfIdentifiedRegion.h	\
+	CountryOnly.h	\
+	CountryAndRegions.h	\
+	CountryAndSubregions.h	\
+	RegionAndSubregions.h	\
+	SequenceOfRegionAndSubregions.h	\
+	ThreeDLocation.h	\
+	Latitude.h	\
+	Longitude.h	\
+	Elevation.h	\
+	NinetyDegreeInt.h	\
+	KnownLatitude.h	\
+	UnknownLatitude.h	\
+	OneEightyDegreeInt.h	\
+	KnownLongitude.h	\
+	UnknownLongitude.h	\
+	ElevInt.h	\
+	Signature.h	\
+	EcdsaP256Signature.h	\
+	EcdsaP384Signature.h	\
+	EccP256CurvePoint.h	\
+	EccP384CurvePoint.h	\
+	SymmAlgorithm.h	\
+	HashAlgorithm.h	\
+	EciesP256EncryptedKey.h	\
+	EncryptionKey.h	\
+	PublicEncryptionKey.h	\
+	BasePublicEncryptionKey.h	\
+	PublicVerificationKey.h	\
+	SymmetricEncryptionKey.h	\
+	PsidSsp.h	\
+	SequenceOfPsidSsp.h	\
+	Psid.h	\
+	SequenceOfPsid.h	\
+	ServiceSpecificPermissions.h	\
+	BitmapSsp.h	\
+	PsidSspRange.h	\
+	SequenceOfPsidSspRange.h	\
+	SspRange.h	\
+	BitmapSspRange.h	\
+	SequenceOfOctetString.h	\
+	SubjectAssurance.h	\
+	CrlSeries.h	\
+	IValue.h	\
+	Hostname.h	\
+	LinkageValue.h	\
+	GroupLinkageValue.h	\
+	LaId.h	\
+	LinkageSeed.h
+
+ASN_MODULE_HDRS+=OPEN_TYPE.h
+ASN_MODULE_SRCS+=OPEN_TYPE.c
+ASN_MODULE_HDRS+=constr_CHOICE.h
+ASN_MODULE_HDRS+=INTEGER.h
+ASN_MODULE_SRCS+=INTEGER.c
+ASN_MODULE_HDRS+=NULL.h
+ASN_MODULE_SRCS+=NULL.c
+ASN_MODULE_HDRS+=NativeEnumerated.h
+ASN_MODULE_SRCS+=NativeEnumerated.c
+ASN_MODULE_HDRS+=NativeInteger.h
+ASN_MODULE_SRCS+=NativeInteger.c
+ASN_MODULE_HDRS+=UTF8String.h
+ASN_MODULE_SRCS+=UTF8String.c
+ASN_MODULE_HDRS+=OCTET_STRING.h
+ASN_MODULE_HDRS+=asn_SEQUENCE_OF.h
+ASN_MODULE_SRCS+=asn_SEQUENCE_OF.c
+ASN_MODULE_HDRS+=asn_SET_OF.h
+ASN_MODULE_SRCS+=asn_SET_OF.c
+ASN_MODULE_SRCS+=constr_CHOICE.c
+ASN_MODULE_HDRS+=constr_SEQUENCE.h
+ASN_MODULE_SRCS+=constr_SEQUENCE.c
+ASN_MODULE_HDRS+=constr_SEQUENCE_OF.h
+ASN_MODULE_SRCS+=constr_SEQUENCE_OF.c
+ASN_MODULE_HDRS+=constr_SET_OF.h
+ASN_MODULE_SRCS+=constr_SET_OF.c
+ASN_MODULE_HDRS+=asn_application.h
+ASN_MODULE_SRCS+=asn_application.c
+ASN_MODULE_HDRS+=asn_ioc.h
+ASN_MODULE_HDRS+=asn_system.h
+ASN_MODULE_HDRS+=asn_codecs.h
+ASN_MODULE_HDRS+=asn_internal.h
+ASN_MODULE_SRCS+=asn_internal.c
+ASN_MODULE_HDRS+=asn_random_fill.h
+ASN_MODULE_SRCS+=asn_random_fill.c
+ASN_MODULE_HDRS+=asn_bit_data.h
+ASN_MODULE_SRCS+=asn_bit_data.c
+ASN_MODULE_SRCS+=OCTET_STRING.c
+ASN_MODULE_HDRS+=BIT_STRING.h
+ASN_MODULE_SRCS+=BIT_STRING.c
+ASN_MODULE_SRCS+=asn_codecs_prim.c
+ASN_MODULE_HDRS+=asn_codecs_prim.h
+ASN_MODULE_HDRS+=ber_tlv_length.h
+ASN_MODULE_SRCS+=ber_tlv_length.c
+ASN_MODULE_HDRS+=ber_tlv_tag.h
+ASN_MODULE_SRCS+=ber_tlv_tag.c
+ASN_MODULE_HDRS+=ber_decoder.h
+ASN_MODULE_SRCS+=ber_decoder.c
+ASN_MODULE_HDRS+=der_encoder.h
+ASN_MODULE_SRCS+=der_encoder.c
+ASN_MODULE_HDRS+=constr_TYPE.h
+ASN_MODULE_SRCS+=constr_TYPE.c
+ASN_MODULE_HDRS+=constraints.h
+ASN_MODULE_SRCS+=constraints.c
+ASN_MODULE_HDRS+=xer_support.h
+ASN_MODULE_SRCS+=xer_support.c
+ASN_MODULE_HDRS+=xer_decoder.h
+ASN_MODULE_SRCS+=xer_decoder.c
+ASN_MODULE_HDRS+=xer_encoder.h
+ASN_MODULE_SRCS+=xer_encoder.c
+ASN_MODULE_HDRS+=per_support.h
+ASN_MODULE_SRCS+=per_support.c
+ASN_MODULE_HDRS+=per_decoder.h
+ASN_MODULE_SRCS+=per_decoder.c
+ASN_MODULE_HDRS+=per_encoder.h
+ASN_MODULE_SRCS+=per_encoder.c
+ASN_MODULE_HDRS+=per_opentype.h
+ASN_MODULE_SRCS+=per_opentype.c
+ASN_MODULE_HDRS+=oer_decoder.h
+ASN_MODULE_HDRS+=oer_encoder.h
+ASN_MODULE_HDRS+=oer_support.h
+ASN_MODULE_SRCS+=oer_decoder.c
+ASN_MODULE_SRCS+=oer_encoder.c
+ASN_MODULE_SRCS+=oer_support.c
+ASN_MODULE_SRCS+=OPEN_TYPE_oer.c
+ASN_MODULE_SRCS+=INTEGER_oer.c
+ASN_MODULE_SRCS+=BIT_STRING_oer.c
+ASN_MODULE_SRCS+=OCTET_STRING_oer.c
+ASN_MODULE_SRCS+=NativeInteger_oer.c
+ASN_MODULE_SRCS+=NativeEnumerated_oer.c
+ASN_MODULE_SRCS+=constr_CHOICE_oer.c
+ASN_MODULE_SRCS+=constr_SEQUENCE_oer.c
+ASN_MODULE_SRCS+=constr_SET_OF_oer.c
+
+ASN_MODULE_CFLAGS=
+
+lib_LTLIBRARIES+=libasncodec.la
+libasncodec_la_SOURCES=$(ASN_MODULE_SRCS) $(ASN_MODULE_HDRS)
+libasncodec_la_CPPFLAGS=-I$(top_srcdir)/
+libasncodec_la_CFLAGS=$(ASN_MODULE_CFLAGS)
+libasncodec_la_LDFLAGS=-lm
