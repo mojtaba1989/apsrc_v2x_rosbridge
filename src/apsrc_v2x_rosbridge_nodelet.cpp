@@ -2,6 +2,8 @@
 #include <vector>
 
 #include "apsrc_v2x_rosbridge/apsrc_v2x_rosbridge_nodelet.hpp"
+#include "Ieee1609Dot2Data.h"
+#include "MessageFrame.h"
 
 namespace apsrc_v2x_rosbridge
 {
@@ -60,11 +62,17 @@ bool ApsrcV2xRosBridgeNl::startServer()
 
 std::vector<uint8_t> ApsrcV2xRosBridgeNl::handleServerResponse(const std::vector<uint8_t>& received_payload)
 {
-  std::vector<uint8_t> udp_msg = {};
-  return udp_msg;
+  std::vector <uint8_t> returned_msg = {}; 
+  ieee1609_data_ = 0;
+  // ieee1609_rval_t_ = oer_decode(0, &asn_DEF_Ieee1609Dot2Data, (void **)&ieee1609_data_, (void **)&received_payload, sizeof(received_payload));
+  // j2735_rval_t_ = uper_decode(0, &asn_DEF_MessageFrame, (void **)&j2735_rval_t_, 
+  // ieee1609_data_->content->choice.signedData->tbsData->payload->data->content->choice.unsecuredData.buf, 
+  // ieee1609_data_->content->choice.signedData->tbsData->payload->data->content->choice.unsecuredData.size, 0, 0);
+  return returned_msg;
 }
 
 
 
 } //namespace apsrc_v2x_rosbridge
-PLUGINLIB_EXPORT_CLASS(apsrc_v2x_rosbridge::ApsrcV2xRosBridgeNl, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS(apsrc_v2x_rosbridge::ApsrcV2xRosBridgeNl,
+                      nodelet::Nodelet);
