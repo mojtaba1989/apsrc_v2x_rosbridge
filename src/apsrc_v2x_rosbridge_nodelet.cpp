@@ -10,7 +10,6 @@ namespace apsrc_v2x_rosbridge
 
 ApsrcV2xRosBridgeNl::ApsrcV2xRosBridgeNl()
 {
-
 }
 
 ApsrcV2xRosBridgeNl::~ApsrcV2xRosBridgeNl()
@@ -64,15 +63,15 @@ std::vector<uint8_t> ApsrcV2xRosBridgeNl::handleServerResponse(const std::vector
 {
   std::vector <uint8_t> returned_msg = {}; 
   ieee1609_data_ = 0;
-  // ieee1609_rval_t_ = oer_decode(0, &asn_DEF_Ieee1609Dot2Data, (void **)&ieee1609_data_, (void **)&received_payload, sizeof(received_payload));
-  // j2735_rval_t_ = uper_decode(0, &asn_DEF_MessageFrame, (void **)&j2735_rval_t_, 
-  // ieee1609_data_->content->choice.signedData->tbsData->payload->data->content->choice.unsecuredData.buf, 
-  // ieee1609_data_->content->choice.signedData->tbsData->payload->data->content->choice.unsecuredData.size, 0, 0);
+  ieee1609_rval_t_ = oer_decode(0, &asn_DEF_Ieee1609Dot2Data, (void **)&ieee1609_data_, (void **)&received_payload, sizeof(received_payload));
+  j2735_rval_t_ = uper_decode(0, &asn_DEF_MessageFrame, (void **)&j2735_rval_t_, 
+  ieee1609_data_->content->choice.signedData->tbsData->payload->data->content->choice.unsecuredData.buf, 
+  ieee1609_data_->content->choice.signedData->tbsData->payload->data->content->choice.unsecuredData.size, 0, 0);
   return returned_msg;
 }
 
 
 
-} //namespace apsrc_v2x_rosbridge
+}; //namespace apsrc_v2x_rosbridge
 PLUGINLIB_EXPORT_CLASS(apsrc_v2x_rosbridge::ApsrcV2xRosBridgeNl,
                       nodelet::Nodelet);
