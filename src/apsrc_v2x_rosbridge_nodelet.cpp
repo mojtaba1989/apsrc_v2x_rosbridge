@@ -25,9 +25,9 @@ void ApsrcV2xRosBridgeNl::onInit()
   pnh_ = getPrivateNodeHandle();
   loadParams();
 
-  bsm_pub_ = nh_.advertise<std_msgs::Header>("v2x/BasicSafetyMessage", 10, true);
-  spat_pub_ = nh_.advertise<std_msgs::Header>("v2x/SPaT", 10, true);
-  map_pub_ = nh_.advertise<std_msgs::Header>("v2x/MAP", 10, true);
+  bsm_pub_ = nh_.advertise<autoware_msgs::Lane>("/v2x/BasicSafetyMessage", 10, true);
+  spat_pub_ = nh_.advertise<autoware_msgs::Lane>("/v2x/SPaT", 10, true);
+  map_pub_ = nh_.advertise<autoware_msgs::Lane>("/v2x/MAP", 10, true);
 
   if (startServer()){
     udp_server_running_ = true;
@@ -45,7 +45,25 @@ void ApsrcV2xRosBridgeNl::loadParams()
   ROS_INFO("Parameters Loaded");
 }
 
-bool S
+bool ApsrcV2xRosBridgeNl::startServer()
+{
+  AS::Network::ReturnStatuses status = udp_server_.open(server_ip_, server_port_);
+  if (status != AS::Network::ReturnStatuses::OK){
+    ROS_ERROR("Could not start UDP server: %d - %s", static_cast<int>(status), return_status_desc(status).c_str());
+    return false;
+  } else {
+    ROS_INFO("UDP server started at %s (%s)", server_ip_.c_str(), std::to_string(server_port_).c_str());
+    udp_server_.registerReceiveHandler(std::bind(&ApsrcV2xRosBridgeNl::handleServerResponse, this, std::placeholders::_1));
+    return true;
+  }
+}
+
+std::vector<uint8_t> ApsrcV2xRosBridgeNl::handleServerResponse(const std::vector<uint8_t>& received_payload)
+{
+  std::vector<uint8_t> udp_msg = {};
+  return udp_msg;
+}
+
 
 
 } //namespace apsrc_v2x_rosbridge

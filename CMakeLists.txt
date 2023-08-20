@@ -7,10 +7,13 @@ project(apsrc_v2x_rosbridge)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
+
+set(CMAKE_CXX_FLAGS "-std=c++14 -Wall -Wextra ${CMAKE_CXX_FLAGS}")
 find_package(catkin REQUIRED COMPONENTS
   autoware_msgs
   geometry_msgs
   network_interface
+  nodelet
   roscpp
   roslib
   roslint

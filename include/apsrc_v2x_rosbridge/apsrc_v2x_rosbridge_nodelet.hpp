@@ -9,6 +9,12 @@
 #include <thread>
 #include <mutex>
 
+#include <autoware_msgs/LaneArray.h>
+#include <autoware_msgs/VehicleStatus.h>
+#include <geometry_msgs/TwistStamped.h>
+#include <tf/transform_datatypes.h>
+#include <std_msgs/Int32.h>
+
 namespace apsrc_v2x_rosbridge
 {
 class ApsrcV2xRosBridgeNl : public nodelet::Nodelet
@@ -24,6 +30,9 @@ private:
 
   // Nodehandles
   ros::NodeHandle nh_, pnh_;
+
+  // UDP server callbacks
+  std::vector<uint8_t> handleServerResponse(const std::vector<uint8_t>& received_payload);
 
   // Publisher
   ros::Publisher bsm_pub_;
