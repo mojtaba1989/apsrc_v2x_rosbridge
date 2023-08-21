@@ -17,6 +17,7 @@
 
 
   <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>message_generation</build_depend>
   <depend>autoware_msgs</depend>
   <depend>network_interface</depend>
   <depend>nodelet</depend>
@@ -27,6 +28,7 @@
   <depend>std_msgs</depend>
   <depend>asnj2735</depend>
   <depend>asn1609dot2</depend>
+  <exec_depend>message_runtime</exec_depend>
 
 
 

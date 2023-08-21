@@ -4,6 +4,7 @@
 #include "apsrc_v2x_rosbridge/apsrc_v2x_rosbridge_nodelet.hpp"
 #include "Ieee1609Dot2Data.h"
 #include "MessageFrame.h"
+#include "apsrc_v2x_rosbridge/BasicSafetyMessage.h"
 
 namespace apsrc_v2x_rosbridge
 {
@@ -26,9 +27,9 @@ void ApsrcV2xRosBridgeNl::onInit()
   pnh_ = getPrivateNodeHandle();
   loadParams();
 
-  bsm_pub_ = nh_.advertise<autoware_msgs::Lane>("/v2x/BasicSafetyMessage", 10, true);
-  spat_pub_ = nh_.advertise<autoware_msgs::Lane>("/v2x/SPaT", 10, true);
-  map_pub_ = nh_.advertise<autoware_msgs::Lane>("/v2x/MAP", 10, true);
+  bsm_pub_ = nh_.advertise<apsrc_v2x_rosbridge::BasicSafetyMessage>("/v2x/BasicSafetyMessage", 10, true);
+  spat_pub_ = nh_.advertise<apsrc_v2x_rosbridge::BasicSafetyMessage>("/v2x/SPaT", 10, true);
+  map_pub_ = nh_.advertise<apsrc_v2x_rosbridge::BasicSafetyMessage>("/v2x/MAP", 10, true);
 
   if (startServer()){
     udp_server_running_ = true;
@@ -63,15 +64,63 @@ std::vector<uint8_t> ApsrcV2xRosBridgeNl::handleServerResponse(const std::vector
 {
   std::vector <uint8_t> returned_msg = {}; 
   ieee1609_data_ = 0;
-  ieee1609_rval_t_ = oer_decode(0, &asn_DEF_Ieee1609Dot2Data, (void **)&ieee1609_data_, (void **)&received_payload, sizeof(received_payload));
-  j2735_rval_t_ = uper_decode(0, &asn_DEF_MessageFrame, (void **)&j2735_rval_t_, 
-  ieee1609_data_->content->choice.signedData->tbsData->payload->data->content->choice.unsecuredData.buf, 
-  ieee1609_data_->content->choice.signedData->tbsData->payload->data->content->choice.unsecuredData.size, 0, 0);
+  ieee1609_rval_t_ = oer_decode(0, 
+                                 &asn_DEF_Ieee1609Dot2Data,
+                                 (void **)&ieee1609_data_, 
+                                 (void **)&received_payload, 
+                                 sizeof(received_payload));
+
+  if (ieee1609_rval_t_.code != RC_OK){
+    ROS_WARN("Broken IEEE1609.2 encoding at byte %ld", (long)ieee1609_rval_t_.consumed);
+    return returned_msg;
+  }
+  
+  j2735_rval_t_ = uper_decode(0, 
+                              &asn_DEF_MessageFrame, 
+                              (void **)&j2735_data_, 
+                              ieee1609_data_->content->choice.signedData->tbsData->payload->data->content->choice.unsecuredData.buf, 
+                              ieee1609_data_->content->choice.signedData->tbsData->payload->data->content->choice.unsecuredData.size, 0, 0);
+
+  if (j2735_rval_t_.code != RC_OK){
+    ROS_WARN("Broken J2735 encoding at byte %ld", (long)j2735_rval_t_.consumed);
+    return returned_msg;
+  }
+
+  switch (j2735_data_->messageId)
+  {
+  case 20:
+    if (!ApsrcV2xRosBridgeNl::BasicSafetyMessagePublisher(j2735_data_)){
+      ROS_WARN("Failed to publish received Basic Safety Message...");
+    }
+    break;
+  case 19:
+    if (!ApsrcV2xRosBridgeNl::SPaTPublisher(j2735_data_)){
+      ROS_WARN("Failed to publish received SPaT...");
+    }
+    break;
+  case 18:
+    if (!ApsrcV2xRosBridgeNl::MapPublisher(j2735_data_)){
+      ROS_WARN("Failed to publish received MAP...");
+    }
+    break;
+  default:
+    ROS_WARN("Failed to identify J2735 message...");
+    break;
+  }
   return returned_msg;
+}
+
+bool ApsrcV2xRosBridgeNl::BasicSafetyMessagePublisher(const MessageFrame_t *j2735_data)
+{
+  apsrc_v2x_rosbridge::BasicSafetyMessage msg = {};
+  msg.messageId = j2735_data->messageId;
+  ApsrcV2xRosBridgeNl::bsm_pub_.publish(msg);
+  return true;
 }
 
 
 
-}; //namespace apsrc_v2x_rosbridge
+
+} //namespace apsrc_v2x_rosbridge
 PLUGINLIB_EXPORT_CLASS(apsrc_v2x_rosbridge::ApsrcV2xRosBridgeNl,
                       nodelet::Nodelet);

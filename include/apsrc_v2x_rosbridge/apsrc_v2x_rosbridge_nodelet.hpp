@@ -33,6 +33,11 @@ private:
   // UDP server callbacks
   std::vector<uint8_t> handleServerResponse(const std::vector<uint8_t>& received_payload);
 
+  // Message handlers
+  bool BasicSafetyMessagePublisher(const MessageFrame_t *j2735_data);
+  bool SPaTPublisher(const MessageFrame_t *j2735_data);
+  bool MapPublisher(const MessageFrame_t *j2735_data);
+
   // Publisher
   ros::Publisher bsm_pub_;
   ros::Publisher spat_pub_;

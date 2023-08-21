@@ -15,12 +15,23 @@ set(catkin_deps
     std_msgs
 )
 
-find_package(catkin REQUIRED ${catkin_deps})
+find_package(catkin REQUIRED ${catkin_deps} message_generation)
 find_package(Boost REQUIRED)
+
+add_message_files(
+  FILES
+  BasicSafetyMessage.msg
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 catkin_package(
     INCLUDE_DIRS include
     CATKIN_DEPENDS ${catkin_deps}
+    CATKIN_DEPENDS message_runtime
     LIBRARIES ${PROJECT_NAME}_nodelets
 )
 
