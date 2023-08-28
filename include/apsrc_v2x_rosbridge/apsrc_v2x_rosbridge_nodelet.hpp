@@ -54,6 +54,7 @@ private:
   MessageFrame_t *j2735_data_ = 0;
   asn_dec_rval_t ieee1609_rval_t_, j2735_rval_t_;
   size_t size_;
+  char buffer_[1024];
 
   // Params
   std::string server_ip_;

@@ -62,13 +62,22 @@ bool ApsrcV2xRosBridgeNl::startServer()
 
 std::vector<uint8_t> ApsrcV2xRosBridgeNl::handleServerResponse(const std::vector<uint8_t>& received_payload)
 {
-  std::vector <uint8_t> returned_msg = {}; 
+  memset(buffer_, 0, sizeof(buffer_));
+  std::vector <uint8_t> returned_msg = {};
+  if (received_payload.size() <= 1024) {
+    std::copy(received_payload.begin(),
+              received_payload.end(), 
+              buffer_);
+  } else {
+    ROS_WARN("Received UDP is larger than buffer! (max size 1024 bytes)");
+    return returned_msg;
+  }
   ieee1609_data_ = 0;
   ieee1609_rval_t_ = oer_decode(0, 
                                  &asn_DEF_Ieee1609Dot2Data,
                                  (void **)&ieee1609_data_, 
-                                 (void **)&received_payload, 
-                                 sizeof(received_payload));
+                                 (void **)& buffer_, 
+                                 received_payload.size());
 
   if (ieee1609_rval_t_.code != RC_OK){
     ROS_WARN("Broken IEEE1609.2 encoding at byte %ld", (long)ieee1609_rval_t_.consumed);
