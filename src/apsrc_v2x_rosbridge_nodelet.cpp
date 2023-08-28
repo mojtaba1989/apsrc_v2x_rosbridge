@@ -74,10 +74,10 @@ std::vector<uint8_t> ApsrcV2xRosBridgeNl::handleServerResponse(const std::vector
   }
   ieee1609_data_ = 0;
   ieee1609_rval_t_ = oer_decode(0, 
-                                 &asn_DEF_Ieee1609Dot2Data,
-                                 (void **)&ieee1609_data_, 
-                                 (void **)& buffer_, 
-                                 received_payload.size());
+                                &asn_DEF_Ieee1609Dot2Data,
+                                (void **)&ieee1609_data_, 
+                                (void **)& buffer_, 
+                                received_payload.size());
 
   if (ieee1609_rval_t_.code != RC_OK){
     ROS_WARN("Broken IEEE1609.2 encoding at byte %ld", (long)ieee1609_rval_t_.consumed);
@@ -123,6 +123,52 @@ bool ApsrcV2xRosBridgeNl::BasicSafetyMessagePublisher(const MessageFrame_t *j273
 {
   apsrc_v2x_rosbridge::BasicSafetyMessage msg = {};
   msg.messageId = j2735_data->messageId;
+  msg.value = "BasicSafetyMessage";
+
+  // Core
+  msg.BSMCore.msgCnt = j2735_data->value.choice.BasicSafetyMessage.coreData.msgCnt;
+  msg.BSMCore.ID = ApsrcV2xRosBridgeNl::bufferToHex(j2735_data->value.choice.BasicSafetyMessage.coreData.id.buf, 4);
+  msg.BSMCore.secMark = j2735_data->value.choice.BasicSafetyMessage.coreData.secMark;
+  msg.BSMCore.Latitude = j2735_data->value.choice.BasicSafetyMessage.coreData.lat * 1e-7;
+  msg.BSMCore.Longitude = j2735_data->value.choice.BasicSafetyMessage.coreData.Long * 1e-7;
+  msg.BSMCore.Elevation = j2735_data->value.choice.BasicSafetyMessage.coreData.elev * 1e-1;
+  msg.BSMCore.PositionAccuracy = j2735_data->value.choice.BasicSafetyMessage.coreData.accuracy.semiMinor * 0.05;
+  msg.BSMCore.OrientationAccuracy = j2735_data->value.choice.BasicSafetyMessage.coreData.accuracy.orientation * 0.05; //need to be fixed
+  switch (j2735_data->value.choice.BasicSafetyMessage.coreData.transmission)
+  {
+  case 0:
+    msg.BSMCore.TransmistionState = "Neutral";
+    break;
+  case 1:
+    msg.BSMCore.TransmistionState = "Park";
+    break;
+  case 2:
+    msg.BSMCore.TransmistionState = "Drive";
+    break;
+  case 3:
+    msg.BSMCore.TransmistionState = "Reverse";
+    break;
+  default:
+    msg.BSMCore.TransmistionState = "unavailable";
+    break;
+  }
+  msg.BSMCore.Speed = j2735_data->value.choice.BasicSafetyMessage.coreData.speed * 0.02;
+  msg.BSMCore.Speed = j2735_data->value.choice.BasicSafetyMessage.coreData.speed * 0.02;
+  msg.BSMCore.Heading = j2735_data->value.choice.BasicSafetyMessage.coreData.heading * 0.0125;
+  msg.BSMCore.SteeringWheelAngle = j2735_data->value.choice.BasicSafetyMessage.coreData.heading * 1.5;
+  msg.BSMCore.AccelerationSet4Way.latitude = j2735_data->value.choice.BasicSafetyMessage.coreData.accelSet.lat * 0.01;
+  msg.BSMCore.AccelerationSet4Way.longitude = j2735_data->value.choice.BasicSafetyMessage.coreData.accelSet.Long * 0.01;
+  msg.BSMCore.AccelerationSet4Way.vertical = j2735_data->value.choice.BasicSafetyMessage.coreData.accelSet.vert * 0.02;
+  msg.BSMCore.AccelerationSet4Way.yaw = j2735_data->value.choice.BasicSafetyMessage.coreData.accelSet.yaw * 0.01;
+  if (j2735_data->value.choice.BasicSafetyMessage.coreData.brakes.wheelBrakes.buf[0] == 0){
+    msg.BSMCore.BrakeSystemStatus.BrakeAppliedStatus.available = true;
+    msg.BSMCore.BrakeSystemStatus.BrakeAppliedStatus.LeftFront = j2735_data->value.choice.BasicSafetyMessage.coreData.brakes.wheelBrakes.buf[1] ? true:false;
+    msg.BSMCore.BrakeSystemStatus.BrakeAppliedStatus.LeftRear = j2735_data->value.choice.BasicSafetyMessage.coreData.brakes.wheelBrakes.buf[2] ? true:false;
+    msg.BSMCore.BrakeSystemStatus.BrakeAppliedStatus.RightFront = j2735_data->value.choice.BasicSafetyMessage.coreData.brakes.wheelBrakes.buf[3] ? true:false;
+    msg.BSMCore.BrakeSystemStatus.BrakeAppliedStatus.RightRear = j2735_data->value.choice.BasicSafetyMessage.coreData.brakes.wheelBrakes.buf[4] ? true:false;
+  }
+  msg.BSMCore.VehicleSize.VehicleLength = j2735_data->value.choice.BasicSafetyMessage.coreData.size.length * 0.01;
+  msg.BSMCore.VehicleSize.VehicleWidth = j2735_data->value.choice.BasicSafetyMessage.coreData.size.width * 0.01;
   ApsrcV2xRosBridgeNl::bsm_pub_.publish(msg);
   return true;
 }
