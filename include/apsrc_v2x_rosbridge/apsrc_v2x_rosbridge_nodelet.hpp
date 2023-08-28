@@ -9,7 +9,6 @@
 #include <thread>
 #include <mutex>
 
-#include <autoware_msgs/LaneArray.h> // must be removed
 #include "Ieee1609Dot2Data.h"
 #include "MessageFrame.h"
 
@@ -59,6 +58,17 @@ private:
   // Params
   std::string server_ip_;
   int server_port_;
+
+  // Plugins
+  std::string bufferToHex(const unsigned char* buffer, std::size_t size)
+  {
+    std::ostringstream oss;
+    oss << std::hex; // Set the stream to output in hexadecimal
+    for (std::size_t i = 0; i < size; ++i) {
+        oss << std::setw(2) << std::setfill('0') << static_cast<int>(buffer[i]);
+    }
+    return oss.str();
+  }
   
 };
 }
