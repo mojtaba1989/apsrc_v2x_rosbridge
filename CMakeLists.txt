@@ -19,13 +19,24 @@ find_package(catkin REQUIRED ${catkin_deps} message_generation)
 find_package(Boost REQUIRED)
 
 add_message_files(
+  DIRECTORY msg
   FILES
-  BasicSafetyMessage.msg
+    AccelerationSet4Way.msg
+    BasicSafetyMessage.msg
+    BrakeAppliedStatus.msg
+    BrakeSystemStatus.msg
+    BSMCore.msg
+    BSMpartIIExtension.msg
+    PathHistory.msg
+    PathHistoryPoint.msg
+    PathPrediction.msg
+    VehicleSafetyExtensions.msg
+    VehicleSize.msg
 )
 
 generate_messages(
   DEPENDENCIES
-  std_msgs
+    std_msgs
 )
 
 catkin_package(
