@@ -5,6 +5,7 @@
 #include "Ieee1609Dot2Data.h"
 #include "MessageFrame.h"
 #include "apsrc_v2x_rosbridge/BasicSafetyMessage.h"
+#include "apsrc_v2x_rosbridge/MapData.h"
 
 namespace apsrc_v2x_rosbridge
 {
@@ -29,7 +30,7 @@ void ApsrcV2xRosBridgeNl::onInit()
 
   bsm_pub_ = nh_.advertise<apsrc_v2x_rosbridge::BasicSafetyMessage>("/v2x/BasicSafetyMessage", 10, true);
   spat_pub_ = nh_.advertise<apsrc_v2x_rosbridge::BasicSafetyMessage>("/v2x/SPaT", 10, true);
-  map_pub_ = nh_.advertise<apsrc_v2x_rosbridge::BasicSafetyMessage>("/v2x/MAP", 10, true);
+  map_pub_ = nh_.advertise<apsrc_v2x_rosbridge::MapData>("/v2x/MapData", 10, true);
 
   if (startServer()){
     udp_server_running_ = true;
@@ -173,6 +174,14 @@ bool ApsrcV2xRosBridgeNl::BasicSafetyMessagePublisher(const MessageFrame_t *j273
   return true;
 }
 
+bool ApsrcV2xRosBridgeNl::MapPublisher(const MessageFrame_t *j2735_data)
+{
+  apsrc_v2x_rosbridge::MapData msg = {};
+  msg.messageId = j2735_data->messageId;
+  msg.value = "MapData";
+  msg.msgIssueRevision = j2735_data->value.choice.MapData.msgIssueRevision;
+  // msg.Intersections.IntersectionGeometry.id = j2735_data->value.choice.MapData.intersections->list.array
+}
 
 
 

@@ -1,0 +1,4 @@
+uint8 laneID
+LaneAttributes laneAttributes
+NodeList nodeList
+ConnectsTo connectsTo
