@@ -9,8 +9,9 @@
 #include <thread>
 #include <mutex>
 
-#include "Ieee1609Dot2Data.h"
 #include "MessageFrame.h"
+#include "Ieee1609Dot2Data.h"
+
 
 
 namespace apsrc_v2x_rosbridge
@@ -50,7 +51,7 @@ private:
   std::thread udp_server_thread_;
   bool udp_server_running_ = false;
   Ieee1609Dot2Data_t *ieee1609_data_ = 0;
-  MessageFrame_t *j2735_data_ = 0;
+  const MessageFrame_t *j2735_data_ = 0;
   asn_dec_rval_t ieee1609_rval_t_, j2735_rval_t_;
   size_t size_;
   char buffer_[1024];
@@ -69,7 +70,6 @@ private:
     }
     return oss.str();
   }
-  
 };
 }
-#endif // APSRC_V2X_ROSBRIDGENL_H
+#endif // APSRC_V2X_ROSBRIDGENL_H1

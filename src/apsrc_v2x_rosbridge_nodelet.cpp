@@ -2,10 +2,13 @@
 #include <vector>
 
 #include "apsrc_v2x_rosbridge/apsrc_v2x_rosbridge_nodelet.hpp"
-#include "Ieee1609Dot2Data.h"
 #include "MessageFrame.h"
+#include "Ieee1609Dot2Data.h"
+#include "asn_SEQUENCE_OF.h"
 #include "apsrc_v2x_rosbridge/BasicSafetyMessage.h"
 #include "apsrc_v2x_rosbridge/MapData.h"
+#include "apsrc_v2x_rosbridge/NodeXY.h"
+#include "apsrc_v2x_rosbridge/GenericLane.h"
 
 namespace apsrc_v2x_rosbridge
 {
@@ -95,7 +98,6 @@ std::vector<uint8_t> ApsrcV2xRosBridgeNl::handleServerResponse(const std::vector
     ROS_WARN("Broken J2735 encoding at byte %ld", (long)j2735_rval_t_.consumed);
     return returned_msg;
   }
-
   switch (j2735_data_->messageId)
   {
   case 20:
@@ -170,6 +172,7 @@ bool ApsrcV2xRosBridgeNl::BasicSafetyMessagePublisher(const MessageFrame_t *j273
   }
   msg.BSMCore.VehicleSize.VehicleLength = j2735_data->value.choice.BasicSafetyMessage.coreData.size.length * 0.01;
   msg.BSMCore.VehicleSize.VehicleWidth = j2735_data->value.choice.BasicSafetyMessage.coreData.size.width * 0.01;
+
   ApsrcV2xRosBridgeNl::bsm_pub_.publish(msg);
   return true;
 }
@@ -177,10 +180,54 @@ bool ApsrcV2xRosBridgeNl::BasicSafetyMessagePublisher(const MessageFrame_t *j273
 bool ApsrcV2xRosBridgeNl::MapPublisher(const MessageFrame_t *j2735_data)
 {
   apsrc_v2x_rosbridge::MapData msg = {};
+  
   msg.messageId = j2735_data->messageId;
   msg.value = "MapData";
   msg.msgIssueRevision = j2735_data->value.choice.MapData.msgIssueRevision;
-  // msg.Intersections.IntersectionGeometry.id = j2735_data->value.choice.MapData.intersections->list.array
+
+  IntersectionGeometry_t intersection_geometry = **j2735_data->value.choice.MapData.intersections->list.array;
+  msg.Intersections.IntersectionGeometry.id = intersection_geometry.id.id;
+  msg.Intersections.IntersectionGeometry.revision = intersection_geometry.revision;
+  msg.Intersections.IntersectionGeometry.refPoint.latitude = intersection_geometry.refPoint.lat * 1e-7;
+  msg.Intersections.IntersectionGeometry.refPoint.longitude = intersection_geometry.refPoint.Long * 1e-7;
+  
+
+  const asn_anonymous_sequence_ *list = _A_CSEQUENCE_FROM_VOID(&(intersection_geometry.laneSet));
+  apsrc_v2x_rosbridge::IntersectionGeometry& x = msg.Intersections.IntersectionGeometry;
+  x.laneSet.resize(list->count, {});
+  GenericLane_t GenericLane[list->count];
+  for (int i = 0; i < list->count; ++i) {
+    void *memb_ptr = list->array[i];
+    std::memcpy(&GenericLane[i], memb_ptr, sizeof(GenericLane[0]));
+    x.laneSet[i].laneID = GenericLane[i].laneID;
+    x.laneSet[i].laneAttributes.directionalUse.ingressPath = GenericLane[i].laneAttributes.directionalUse.buf[0] ? true:false;
+    x.laneSet[i].laneAttributes.directionalUse.egressPath = GenericLane[i].laneAttributes.directionalUse.buf[1] ? true:false;
+    
+    const asn_anonymous_sequence_ *child_list = _A_CSEQUENCE_FROM_VOID(&(GenericLane[i].nodeList.choice.nodes));
+    const asn_anonymous_sequence_ *child_list_ = _A_CSEQUENCE_FROM_VOID(&(GenericLane[i].connectsTo->list.array));
+    apsrc_v2x_rosbridge::NodeList& y = x.laneSet[i].nodeList;
+    x.laneSet[i].nodeList.NodeSetXY.resize(child_list->count, {});
+    NodeXY_t NodeXY[child_list->count];
+    for (int j = 0; j < child_list->count; ++j){
+      void *chid_ptr = child_list->array[j];
+      std::memcpy(&NodeXY[j], chid_ptr, sizeof(NodeXY[0]));
+      y.NodeSetXY[j].delta.X = NodeXY[j].delta.choice.node_XY6.x;
+      y.NodeSetXY[j].delta.y = NodeXY[j].delta.choice.node_XY6.y;
+    }
+    
+    // apsrc_v2x_rosbridge::ConnectsTo& z = x.laneSet[i].connectsTo;
+    x.laneSet[i].connectsTo.ConnectsToList.resize(child_list_->count, {});
+    Connection_t Connection[child_list_->count];
+    for (int k = 0; k < child_list_->count; ++k){
+      void *chid_ptr_2 = child_list_->array[k];
+      std::memcpy(&Connection[k], chid_ptr_2, sizeof(Connection[0]));
+      x.laneSet[i].connectsTo.ConnectsToList[k].ConnectingLane.lane = Connection[k].connectingLane.lane;
+      x.laneSet[i].connectsTo.ConnectsToList[k].SignalGroup.SignalGroupID = *Connection[k].signalGroup;
+    }
+  }
+  
+  ApsrcV2xRosBridgeNl::map_pub_.publish(msg);
+  return true;
 }
 
 

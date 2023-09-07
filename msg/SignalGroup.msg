@@ -1,1 +1,1 @@
-uint8 SignalGroupID
+int64 SignalGroupID

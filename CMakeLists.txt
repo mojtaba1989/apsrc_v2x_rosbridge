@@ -76,8 +76,8 @@ include_directories(
     include
     ${catkin_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIRS}
-    include/${PROJECT_NAME}/asn1609dot2
     include/${PROJECT_NAME}/asnJ2735
+    include/${PROJECT_NAME}/asn1609dot2
 )
 
 

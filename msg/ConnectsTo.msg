@@ -1,1 +1,1 @@
-Connection ConnectsToList
+Connection[] ConnectsToList

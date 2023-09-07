@@ -1,3 +1,3 @@
 LaneDirection directionalUse
-LaneSharing sharedWith
-LaneAttributesVehicle LaneAttributesVehicle
+# LaneSharing sharedWith //skiped
+# LaneAttributesVehicle LaneAttributesVehicle //skiped
