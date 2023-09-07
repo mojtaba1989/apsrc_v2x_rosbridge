@@ -180,7 +180,10 @@ bool ApsrcV2xRosBridgeNl::BasicSafetyMessagePublisher(const MessageFrame_t *j273
 bool ApsrcV2xRosBridgeNl::MapPublisher(const MessageFrame_t *j2735_data)
 {
   apsrc_v2x_rosbridge::MapData msg = {};
-  
+
+  msg.header.frame_id = "map";
+  msg.header.stamp = ros::Time::now();
+
   msg.messageId = j2735_data->messageId;
   msg.value = "MapData";
   msg.msgIssueRevision = j2735_data->value.choice.MapData.msgIssueRevision;
@@ -215,14 +218,14 @@ bool ApsrcV2xRosBridgeNl::MapPublisher(const MessageFrame_t *j2735_data)
       y.NodeSetXY[j].delta.y = NodeXY[j].delta.choice.node_XY6.y;
     }
     
-    // apsrc_v2x_rosbridge::ConnectsTo& z = x.laneSet[i].connectsTo;
+    apsrc_v2x_rosbridge::ConnectsTo& z = x.laneSet[i].connectsTo;
     x.laneSet[i].connectsTo.ConnectsToList.resize(child_list_->count, {});
     Connection_t Connection[child_list_->count];
     for (int k = 0; k < child_list_->count; ++k){
       void *chid_ptr_2 = child_list_->array[k];
       std::memcpy(&Connection[k], chid_ptr_2, sizeof(Connection[0]));
-      x.laneSet[i].connectsTo.ConnectsToList[k].ConnectingLane.lane = Connection[k].connectingLane.lane;
-      x.laneSet[i].connectsTo.ConnectsToList[k].SignalGroup.SignalGroupID = *Connection[k].signalGroup;
+      z.ConnectsToList[k].ConnectingLane.lane = Connection[k].connectingLane.lane;
+      z.ConnectsToList[k].SignalGroup.SignalGroupID = *Connection[k].signalGroup;
     }
   }
   
