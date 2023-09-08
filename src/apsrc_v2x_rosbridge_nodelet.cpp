@@ -247,9 +247,9 @@ bool ApsrcV2xRosBridgeNl::MapPublisher(const MessageFrame_t *j2735_data)
   return true;
 }
 
-bool ApsrcV2xRosBridgeNl::SPaTPublisher(const MessageFrame_t *j2735_data){
+bool ApsrcV2xRosBridgeNl::SPaTPublisher(const MessageFrame_t *j2735_data)
+{
   apsrc_v2x_rosbridge::SignalPhaseAndTiming msg = {};
-  xer_fprint(stdout, &asn_DEF_MessageFrame, j2735_data);
 
   msg.header.frame_id = "map";
   msg.header.stamp = ros::Time::now();
