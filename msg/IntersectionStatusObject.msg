@@ -1,0 +1,14 @@
+bool IntersectionStatusObject
+bool stopTimeIsActivated
+bool failureFlash
+bool preemptIsActive
+bool signalPriorityIsActive
+bool fixedTimeOperation
+bool trafficDependentOperation
+bool standbyOperation
+bool failureMode
+bool off
+bool recentMAPmessageUpdate
+bool recentChangeInMAPassignedLanesIDsUsed
+bool noValidMAPisAvailableAtThisTime
+bool noValidSPATisAvailableAtThisTime

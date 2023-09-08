@@ -22,6 +22,8 @@ add_message_files(
   DIRECTORY msg
   FILES
     AccelerationSet4Way.msg
+    AdvisorySpeed.msg
+    AdvisorySpeedType.msg
     AllowedManeuvers.msg
     BasicSafetyMessage.msg
     BrakeAppliedStatus.msg
@@ -33,12 +35,19 @@ add_message_files(
     ConnectsTo.msg
     GenericLane.msg
     IntersectionGeometry.msg
+    IntersectionStateList.msg
     Intersections.msg
+    IntersectionState.msg
+    IntersectionStatusObject.msg
     LaneAttributes.msg
     LaneAttributesVehicle.msg
     LaneDirection.msg
     LaneSharing.msg
     MapData.msg
+    MovementEvent.msg
+    MovementList.msg
+    MovementPhaseState.msg
+    MovementState.msg
     NodeList.msg
     NodeOffsetPointXY.msg
     NodeXY.msg
@@ -47,8 +56,9 @@ add_message_files(
     PathPrediction.msg
     Position3D.msg
     SignalGroup.msg
+    SignalPhaseAndTiming.msg
     VehicleSafetyExtensions.msg
-    VehicleSize.msg  
+    VehicleSize.msg 
 )
 
 generate_messages(

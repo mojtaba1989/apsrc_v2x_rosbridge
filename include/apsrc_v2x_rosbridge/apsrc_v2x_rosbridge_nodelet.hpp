@@ -70,6 +70,41 @@ private:
     }
     return oss.str();
   }
+
+  std::string AdvisorySpeedType_(uint8_t type)
+  {
+    std::string label = "";
+    switch (type)
+    {
+    case 0: label = "none"; break;
+    case 1: label = "greenwave"; break;
+    case 2: label = "ecoDrive"; break;
+    case 3: label = "transit"; break;
+    default: label = "unknown"; break;
+    }
+    return label;
+  }
+
+  std::string MovementPhaseState_(uint8_t state)
+  {
+    std::string label = "";
+    switch (state)
+    {
+    case 0: label = "unavailable"; break;
+    case 1: label = "dark"; break;
+    case 2: label = "stop-Then-Proceed"; break;
+    case 3: label = "stop-And-Remain"; break;
+    case 4: label = "pre-Movement"; break;
+    case 5: label = "permissive-Movement-Allowed"; break;
+    case 6: label = "protected-Movement-Allowed"; break;
+    case 7: label = "permissive-clearance"; break;
+    case 8: label = "protected-clearance"; break;
+    case 9: label = "caution-Conflicting-Traffic"; break;
+    default: label = "unknown"; break;
+    }
+    return label;
+  }
+
 };
 }
 #endif // APSRC_V2X_ROSBRIDGENL_H1

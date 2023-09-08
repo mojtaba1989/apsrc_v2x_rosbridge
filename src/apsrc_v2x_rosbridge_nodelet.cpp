@@ -5,10 +5,16 @@
 #include "MessageFrame.h"
 #include "Ieee1609Dot2Data.h"
 #include "asn_SEQUENCE_OF.h"
+
 #include "apsrc_v2x_rosbridge/BasicSafetyMessage.h"
 #include "apsrc_v2x_rosbridge/MapData.h"
 #include "apsrc_v2x_rosbridge/NodeXY.h"
 #include "apsrc_v2x_rosbridge/GenericLane.h"
+
+#include "apsrc_v2x_rosbridge/SignalPhaseAndTiming.h"
+#include "apsrc_v2x_rosbridge/IntersectionState.h"
+#include "apsrc_v2x_rosbridge/MovementState.h"
+#include "apsrc_v2x_rosbridge/AdvisorySpeed.h"
 
 namespace apsrc_v2x_rosbridge
 {
@@ -32,7 +38,7 @@ void ApsrcV2xRosBridgeNl::onInit()
   loadParams();
 
   bsm_pub_ = nh_.advertise<apsrc_v2x_rosbridge::BasicSafetyMessage>("/v2x/BasicSafetyMessage", 10, true);
-  spat_pub_ = nh_.advertise<apsrc_v2x_rosbridge::BasicSafetyMessage>("/v2x/SPaT", 10, true);
+  spat_pub_ = nh_.advertise<apsrc_v2x_rosbridge::SignalPhaseAndTiming>("/v2x/SPaT", 10, true);
   map_pub_ = nh_.advertise<apsrc_v2x_rosbridge::MapData>("/v2x/MapData", 10, true);
 
   if (startServer()){
@@ -125,6 +131,9 @@ std::vector<uint8_t> ApsrcV2xRosBridgeNl::handleServerResponse(const std::vector
 bool ApsrcV2xRosBridgeNl::BasicSafetyMessagePublisher(const MessageFrame_t *j2735_data)
 {
   apsrc_v2x_rosbridge::BasicSafetyMessage msg = {};
+  msg.header.frame_id = "map";
+  msg.header.stamp = ros::Time::now();
+
   msg.messageId = j2735_data->messageId;
   msg.value = "BasicSafetyMessage";
 
@@ -173,6 +182,11 @@ bool ApsrcV2xRosBridgeNl::BasicSafetyMessagePublisher(const MessageFrame_t *j273
   msg.BSMCore.VehicleSize.VehicleLength = j2735_data->value.choice.BasicSafetyMessage.coreData.size.length * 0.01;
   msg.BSMCore.VehicleSize.VehicleWidth = j2735_data->value.choice.BasicSafetyMessage.coreData.size.width * 0.01;
 
+  // Part II
+  /*
+  code
+  */
+
   ApsrcV2xRosBridgeNl::bsm_pub_.publish(msg);
   return true;
 }
@@ -214,8 +228,8 @@ bool ApsrcV2xRosBridgeNl::MapPublisher(const MessageFrame_t *j2735_data)
     for (int j = 0; j < child_list->count; ++j){
       void *chid_ptr = child_list->array[j];
       std::memcpy(&NodeXY[j], chid_ptr, sizeof(NodeXY[0]));
-      y.NodeSetXY[j].delta.X = NodeXY[j].delta.choice.node_XY6.x;
-      y.NodeSetXY[j].delta.y = NodeXY[j].delta.choice.node_XY6.y;
+      y.NodeSetXY[j].delta.X = NodeXY[j].delta.choice.node_XY6.x * 0.1;
+      y.NodeSetXY[j].delta.y = NodeXY[j].delta.choice.node_XY6.y * 0.1;
     }
     
     apsrc_v2x_rosbridge::ConnectsTo& z = x.laneSet[i].connectsTo;
@@ -233,6 +247,63 @@ bool ApsrcV2xRosBridgeNl::MapPublisher(const MessageFrame_t *j2735_data)
   return true;
 }
 
+bool ApsrcV2xRosBridgeNl::SPaTPublisher(const MessageFrame_t *j2735_data){
+  apsrc_v2x_rosbridge::SignalPhaseAndTiming msg = {};
+  xer_fprint(stdout, &asn_DEF_MessageFrame, j2735_data);
+
+  msg.header.frame_id = "map";
+  msg.header.stamp = ros::Time::now();
+
+  msg.value = "SPaT";
+  msg.messageId = j2735_data->messageId;
+
+  const asn_anonymous_sequence_ *intersection_list = _A_CSEQUENCE_FROM_VOID(&(j2735_data->value.choice.SPAT.intersections));
+  msg.intersections.intersectionState.resize(intersection_list->count, {});
+  IntersectionState_t intersection_state[intersection_list->count] = {};
+  for(int i = 0; i < intersection_list->count; ++i){
+    void *intersection_ptr = intersection_list->array[i];
+    std::memcpy(&intersection_state[i], intersection_ptr, sizeof(intersection_state[0]));
+    apsrc_v2x_rosbridge::IntersectionState& x = msg.intersections.intersectionState[i];
+    x.messageId = intersection_state[i].id.id;
+    x.revision = intersection_state[i].revision;
+    std::memcpy(&x.status, &intersection_state[i].status, 13);
+    
+    const asn_anonymous_sequence_ *states_list = _A_CSEQUENCE_FROM_VOID(&(intersection_state[i].states));
+    x.states.movementState.resize(states_list->count, {});
+    MovementState_t movement_state[states_list->count] = {};
+    for(int j = 0; j < states_list->count; ++j){
+      void *ms_ptr = states_list->array[j];
+      std::memcpy(&movement_state[j], ms_ptr, sizeof(movement_state[0]));
+      x.states.movementState[j].signalGroup = movement_state[j].signalGroup;
+
+      const asn_anonymous_sequence_ *movement_event_list = _A_CSEQUENCE_FROM_VOID(&(movement_state[j].state_time_speed));
+      x.states.movementState[j].stateTimeSpeed.resize(movement_event_list->count, {});
+      MovementEvent_t movement_event[movement_event_list->count] = {};
+      for (int k = 0; k < movement_event_list->count; ++k){
+        void *mv_ptr = movement_event_list->array[k];
+        std::memcpy(&movement_event[k], mv_ptr, sizeof(movement_event[0]));
+        x.states.movementState[j].stateTimeSpeed[k].eventState.state = movement_event[k].eventState;
+        x.states.movementState[j].stateTimeSpeed[k].eventState.label = ApsrcV2xRosBridgeNl::MovementPhaseState_(movement_event[k].eventState);
+        x.states.movementState[j].stateTimeSpeed[k].minEndTime = movement_event[k].timing->minEndTime * 0.1;
+
+        const asn_anonymous_sequence_ *advisory_speed_list = _A_CSEQUENCE_FROM_VOID(&(movement_event[k].speeds->list.array));
+        x.states.movementState[j].stateTimeSpeed[k].speeds.resize(advisory_speed_list->count, {});
+        AdvisorySpeed_t advisory_speed[advisory_speed_list->count] = {};
+        for(int l = 0; l < advisory_speed_list->count; ++l){
+          void *as_ptr = advisory_speed_list->array[l];
+          std::memcpy(&advisory_speed[l], as_ptr, sizeof(advisory_speed[0]));
+          apsrc_v2x_rosbridge::AdvisorySpeed& y = x.states.movementState[j].stateTimeSpeed[k].speeds[l];
+          y.type.type = advisory_speed[l].type;
+          y.type.label = ApsrcV2xRosBridgeNl::AdvisorySpeedType_(advisory_speed[l].type);
+          y.speed = *advisory_speed[l].speed * 0.1;
+          y.distance = *advisory_speed[l].distance;
+        }     
+      }
+    }
+  }
+  ApsrcV2xRosBridgeNl::spat_pub_.publish(msg);
+  return true;
+}
 
 
 } //namespace apsrc_v2x_rosbridge
