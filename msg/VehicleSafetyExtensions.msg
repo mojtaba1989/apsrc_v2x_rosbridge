@@ -1,2 +1,0 @@
-PathHistory PathHistory
-PathPrediction PathPrediction

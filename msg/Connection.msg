@@ -1,2 +1,0 @@
-ConnectingLane ConnectingLane
-SignalGroup SignalGroup

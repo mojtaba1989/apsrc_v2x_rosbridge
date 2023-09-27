@@ -19,6 +19,7 @@
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>message_generation</build_depend>
   <depend>autoware_msgs</depend>
+  <depend>apsrc_msgs</depend>
   <depend>network_interface</depend>
   <depend>nodelet</depend>
   <depend>roscpp</depend>

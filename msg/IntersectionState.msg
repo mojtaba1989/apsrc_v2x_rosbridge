@@ -1,4 +1,0 @@
-uint16 messageId
-uint8 revision
-IntersectionStatusObject status
-MovementList states

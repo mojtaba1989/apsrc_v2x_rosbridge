@@ -1,1 +1,0 @@
-IntersectionState[] intersectionState

@@ -1,1 +1,0 @@
-IntersectionGeometry IntersectionGeometry

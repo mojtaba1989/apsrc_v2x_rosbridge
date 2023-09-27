@@ -6,6 +6,7 @@ set(CMAKE_CXX_FLAGS "-std=c++14 -Wall -Wextra ${CMAKE_CXX_FLAGS}")
 
 set(catkin_deps
     autoware_msgs
+    apsrc_msgs
     geometry_msgs
     network_interface
     nodelet
@@ -15,61 +16,12 @@ set(catkin_deps
     std_msgs
 )
 
-find_package(catkin REQUIRED ${catkin_deps} message_generation)
+find_package(catkin REQUIRED ${catkin_deps})
 find_package(Boost REQUIRED)
-
-add_message_files(
-  DIRECTORY msg
-  FILES
-    AccelerationSet4Way.msg
-    AdvisorySpeed.msg
-    AdvisorySpeedType.msg
-    AllowedManeuvers.msg
-    BasicSafetyMessage.msg
-    BrakeAppliedStatus.msg
-    BrakeSystemStatus.msg
-    BSMCore.msg
-    BSMpartIIExtension.msg
-    ConnectingLane.msg
-    Connection.msg
-    ConnectsTo.msg
-    GenericLane.msg
-    IntersectionGeometry.msg
-    IntersectionStateList.msg
-    Intersections.msg
-    IntersectionState.msg
-    IntersectionStatusObject.msg
-    LaneAttributes.msg
-    LaneAttributesVehicle.msg
-    LaneDirection.msg
-    LaneSharing.msg
-    MapData.msg
-    MovementEvent.msg
-    MovementList.msg
-    MovementPhaseState.msg
-    MovementState.msg
-    NodeList.msg
-    NodeOffsetPointXY.msg
-    NodeXY.msg
-    PathHistory.msg
-    PathHistoryPoint.msg
-    PathPrediction.msg
-    Position3D.msg
-    SignalGroup.msg
-    SignalPhaseAndTiming.msg
-    VehicleSafetyExtensions.msg
-    VehicleSize.msg 
-)
-
-generate_messages(
-  DEPENDENCIES
-    std_msgs
-)
 
 catkin_package(
     INCLUDE_DIRS include
     CATKIN_DEPENDS ${catkin_deps}
-    CATKIN_DEPENDS message_runtime
     LIBRARIES ${PROJECT_NAME}_nodelets
 )
 

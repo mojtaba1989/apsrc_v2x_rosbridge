@@ -1,8 +1,0 @@
-bool isVehicleRevocableLane
-bool isVehicleFlyOverLane
-bool hovLaneUseOnly
-bool restrictedToBusUse
-bool restrictedToTaxiUse
-bool restrictedFromPublicUse
-bool hasIRbeaconCoverage
-bool permissionOnRequest
