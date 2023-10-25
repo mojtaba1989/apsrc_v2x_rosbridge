@@ -1,5 +1,11 @@
 <launch>
-  <node pkg="apsrc_v2x_rosbridge" type="apsrc_v2x_rosbridge_node" name="apsrc_v2x_rosbridge" output="screen" />
+  <arg name="node_name" default="apsrc_v2x_rosbridge"/>
+  <arg name="ip" default="169.254.1.1"/>
+  <arg name="port" default="2001"/>
 
-  <rosparam command="load" file="$(find apsrc_v2x_rosbridge)/config/params.yaml" />
+  <node name="$(arg node_name)" pkg="apsrc_v2x_rosbridge" type="apsrc_v2x_rosbridge_node" output="screen">
+    <param name="server_ip" value="$(arg ip)"/>
+    <param name="server_port" value="$(arg port)"/>
+  </node>
+
 </launch>

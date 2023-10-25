@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(apsrc_v2x_rosbridge)
 
 ## c++11 feature
-set(CMAKE_CXX_FLAGS "-std=c++14 -Wall -Wextra ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Wextra ${CMAKE_CXX_FLAGS}")
 
 set(catkin_deps
     autoware_msgs
@@ -14,6 +14,9 @@ set(catkin_deps
     roslib
     roslint
     std_msgs
+    visualization_msgs
+    geographic_msgs
+    geodesy
 )
 
 find_package(catkin REQUIRED ${catkin_deps})
