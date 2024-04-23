@@ -5,18 +5,13 @@ project(apsrc_v2x_rosbridge)
 set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Wextra ${CMAKE_CXX_FLAGS}")
 
 set(catkin_deps
-    autoware_msgs
     apsrc_msgs
-    geometry_msgs
     network_interface
     nodelet
     roscpp
     roslib
     roslint
     std_msgs
-    visualization_msgs
-    geographic_msgs
-    geodesy
 )
 
 find_package(catkin REQUIRED ${catkin_deps})
