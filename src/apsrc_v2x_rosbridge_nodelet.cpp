@@ -41,7 +41,6 @@ void ApsrcV2xRosBridgeNl::onInit()
   bsm_pub_        = nh_.advertise<apsrc_msgs::BasicSafetyMessage>("/v2x/BasicSafetyMessage", 10, true);
   spat_pub_       = nh_.advertise<apsrc_msgs::SignalPhaseAndTiming>("/v2x/SPaT", 10, true);
   map_pub_        = nh_.advertise<apsrc_msgs::MapData>("/v2x/MapData", 10, true);
-  bsm_marker_pub_ = nh_.advertise<visualization_msgs::Marker>("/v2x/bsm_markers", 10, true);
 
   if (startServer()){
     udp_server_running_ = true;
@@ -190,37 +189,6 @@ bool ApsrcV2xRosBridgeNl::BasicSafetyMessagePublisher(const MessageFrame_t *j273
   */
 
   ApsrcV2xRosBridgeNl::bsm_pub_.publish(msg);
-
-  
-  geographic_msgs::GeoPoint geo_point = {};
-  geo_point.altitude = static_cast<double>(msg.BSMCore.Elevation);
-  geo_point.latitude = static_cast<double>(msg.BSMCore.Latitude);
-  geo_point.longitude = static_cast<double>(msg.BSMCore.Longitude);
-
-  geodesy::UTMPoint utm_point(geo_point);
-
-  visualization_msgs::Marker marker = {};
-  marker.header.frame_id = "map";
-  marker.header.stamp = msg.header.stamp;
-  marker.pose.position.x = utm_point.easting;
-  marker.pose.position.y = utm_point.northing;
-  marker.pose.position.z = utm_point.altitude;
-  tf::Quaternion quaternion;
-  quaternion.setRPY(0, 0, static_cast<double>(msg.BSMCore.Heading));
-  marker.pose.orientation.x = quaternion.x();
-  marker.pose.orientation.y = quaternion.y();
-  marker.pose.orientation.z = quaternion.z();
-  marker.pose.orientation.w = quaternion.w();
-  marker.scale.x = 1;
-  marker.scale.y = 1;
-  marker.scale.z = 1;
-  marker.color.a = .5;
-  marker.color.r = 100;
-  marker.color.b = 100;
-  marker.color.g = 100;
-  marker.type = visualization_msgs::Marker::MESH_RESOURCE;
-  marker.mesh_resource = "package://detected_objects_visualizer/models/car.dae";
-  bsm_marker_pub_.publish(marker);
   return true;
 }
 

@@ -12,9 +12,6 @@
 #include "MessageFrame.h"
 #include "Ieee1609Dot2Data.h"
 
-#include "visualization_msgs/Marker.h"
-#include "geodesy/utm.h"
-
 
 namespace apsrc_v2x_rosbridge
 {
@@ -44,8 +41,6 @@ private:
   ros::Publisher bsm_pub_;
   ros::Publisher spat_pub_;
   ros::Publisher map_pub_;
-
-  ros::Publisher bsm_marker_pub_;
 
   // Util
   bool startServer();
