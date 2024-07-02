@@ -73,6 +73,7 @@ bool ApsrcV2xRosBridgeNl::startServer()
 
 std::vector<uint8_t> ApsrcV2xRosBridgeNl::handleServerResponse(const std::vector<uint8_t>& received_payload)
 {
+  ieee1609_data_ = {};
   memset(buffer_, 0, sizeof(buffer_));
   std::vector <uint8_t> returned_msg = {};
   if (received_payload.size() <= 1024) {
@@ -83,7 +84,7 @@ std::vector<uint8_t> ApsrcV2xRosBridgeNl::handleServerResponse(const std::vector
     ROS_WARN("Received UDP is larger than buffer! (max size 1024 bytes)");
     return returned_msg;
   }
-  ieee1609_data_ = 0;
+
   ieee1609_rval_t_ = oer_decode(0, 
                                 &asn_DEF_Ieee1609Dot2Data,
                                 (void **)&ieee1609_data_, 
@@ -94,17 +95,32 @@ std::vector<uint8_t> ApsrcV2xRosBridgeNl::handleServerResponse(const std::vector
     ROS_WARN("Broken IEEE1609.2 encoding at byte %ld", (long)ieee1609_rval_t_.consumed);
     return returned_msg;
   }
-  
-  j2735_rval_t_ = uper_decode(0, 
-                              &asn_DEF_MessageFrame, 
-                              (void **)&j2735_data_, 
-                              ieee1609_data_->content->choice.signedData->tbsData->payload->data->content->choice.unsecuredData.buf, 
-                              ieee1609_data_->content->choice.signedData->tbsData->payload->data->content->choice.unsecuredData.size, 0, 0);
+
+  j2735_data_ = {};
+  uint8_t *j2735_ptr;
+  size_t j2735_size;
+  switch (ieee1609_data_->content->present)
+  {
+  case Ieee1609Dot2Content_PR::Ieee1609Dot2Content_PR_signedData:
+    j2735_ptr = ieee1609_data_->content->choice.signedData->tbsData->payload->data->content->choice.unsecuredData.buf;
+    j2735_size = ieee1609_data_->content->choice.signedData->tbsData->payload->data->content->choice.unsecuredData.size;
+    break;
+
+  case Ieee1609Dot2Content_PR::Ieee1609Dot2Content_PR_unsecuredData:
+    j2735_ptr = ieee1609_data_->content->choice.unsecuredData.buf;
+    j2735_size = ieee1609_data_->content->choice.unsecuredData.size;
+    break;
+  default:
+    return returned_msg;
+  }
+
+  j2735_rval_t_ = uper_decode(0, &asn_DEF_MessageFrame, (void **)&j2735_data_, j2735_ptr, j2735_size, 0, 0);
 
   if (j2735_rval_t_.code != RC_OK){
     ROS_WARN("Broken J2735 encoding at byte %ld", (long)j2735_rval_t_.consumed);
     return returned_msg;
   }
+
   switch (j2735_data_->messageId)
   {
   case 20:
@@ -221,23 +237,31 @@ bool ApsrcV2xRosBridgeNl::MapPublisher(const MessageFrame_t *j2735_data)
     x.laneSet[i].laneAttributes.directionalUse.ingressPath = GenericLane[i].laneAttributes.directionalUse.buf[0] ? true:false;
     x.laneSet[i].laneAttributes.directionalUse.egressPath = GenericLane[i].laneAttributes.directionalUse.buf[1] ? true:false;
     
-    const asn_anonymous_sequence_ *child_list = _A_CSEQUENCE_FROM_VOID(&(GenericLane[i].nodeList.choice.nodes));
-    const asn_anonymous_sequence_ *child_list_ = _A_CSEQUENCE_FROM_VOID(&(GenericLane[i].connectsTo->list.array));
+    const asn_anonymous_sequence_ *child_Node_list = _A_CSEQUENCE_FROM_VOID(&(GenericLane[i].nodeList.choice.nodes));
+    if (child_Node_list == nullptr){
+      continue;
+    }
+
     apsrc_msgs::NodeList& y = x.laneSet[i].nodeList;
-    x.laneSet[i].nodeList.NodeSetXY.resize(child_list->count, {});
-    NodeXY_t NodeXY[child_list->count];
-    for (int j = 0; j < child_list->count; ++j){
-      void *chid_ptr = child_list->array[j];
+    x.laneSet[i].nodeList.NodeSetXY.resize(child_Node_list->count, {});
+    NodeXY_t NodeXY[child_Node_list->count];
+    for (int j = 0; j < child_Node_list->count; ++j){
+      void *chid_ptr = child_Node_list->array[j];
       std::memcpy(&NodeXY[j], chid_ptr, sizeof(NodeXY[0]));
       y.NodeSetXY[j].delta.X = NodeXY[j].delta.choice.node_XY6.x * 0.1;
       y.NodeSetXY[j].delta.y = NodeXY[j].delta.choice.node_XY6.y * 0.1;
     }
     
+    const asn_anonymous_sequence_ *child_To_list = _A_CSEQUENCE_FROM_VOID(&(GenericLane[i].connectsTo->list.array));
+    if (child_To_list == nullptr){
+      continue;
+    }
+
     apsrc_msgs::ConnectsTo& z = x.laneSet[i].connectsTo;
-    x.laneSet[i].connectsTo.ConnectsToList.resize(child_list_->count, {});
-    Connection_t Connection[child_list_->count];
-    for (int k = 0; k < child_list_->count; ++k){
-      void *chid_ptr_2 = child_list_->array[k];
+    x.laneSet[i].connectsTo.ConnectsToList.resize(child_To_list->count, {});
+    Connection_t Connection[child_To_list->count];
+    for (int k = 0; k < child_To_list->count; ++k){
+      void *chid_ptr_2 = child_To_list->array[k];
       std::memcpy(&Connection[k], chid_ptr_2, sizeof(Connection[0]));
       z.ConnectsToList[k].ConnectingLane.lane = Connection[k].connectingLane.lane;
       z.ConnectsToList[k].SignalGroup.SignalGroupID = *Connection[k].signalGroup;
@@ -288,17 +312,19 @@ bool ApsrcV2xRosBridgeNl::SPaTPublisher(const MessageFrame_t *j2735_data)
         x.states.movementState[j].stateTimeSpeed[k].minEndTime = movement_event[k].timing->minEndTime * 0.1;
 
         const asn_anonymous_sequence_ *advisory_speed_list = _A_CSEQUENCE_FROM_VOID(&(movement_event[k].speeds->list.array));
-        x.states.movementState[j].stateTimeSpeed[k].speeds.resize(advisory_speed_list->count, {});
-        AdvisorySpeed_t advisory_speed[advisory_speed_list->count] = {};
-        for(int l = 0; l < advisory_speed_list->count; ++l){
-          void *as_ptr = advisory_speed_list->array[l];
-          std::memcpy(&advisory_speed[l], as_ptr, sizeof(advisory_speed[0]));
-          apsrc_msgs::AdvisorySpeed& y = x.states.movementState[j].stateTimeSpeed[k].speeds[l];
-          y.type.type = advisory_speed[l].type;
-          y.type.label = ApsrcV2xRosBridgeNl::AdvisorySpeedType_(advisory_speed[l].type);
-          y.speed = *advisory_speed[l].speed * 0.1;
-          y.distance = *advisory_speed[l].distance;
-        }     
+        if (advisory_speed_list !=nullptr){
+          x.states.movementState[j].stateTimeSpeed[k].speeds.resize(advisory_speed_list->count, {});
+          AdvisorySpeed_t advisory_speed[advisory_speed_list->count] = {};
+          for(int l = 0; l < advisory_speed_list->count; ++l){
+            void *as_ptr = advisory_speed_list->array[l];
+            std::memcpy(&advisory_speed[l], as_ptr, sizeof(advisory_speed[0]));
+            apsrc_msgs::AdvisorySpeed& y = x.states.movementState[j].stateTimeSpeed[k].speeds[l];
+            y.type.type = advisory_speed[l].type;
+            y.type.label = ApsrcV2xRosBridgeNl::AdvisorySpeedType_(advisory_speed[l].type);
+            y.speed = *advisory_speed[l].speed * 0.1;
+            y.distance = *advisory_speed[l].distance;
+          }
+        }    
       }
     }
   }

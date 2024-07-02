@@ -12,7 +12,6 @@
 #include "MessageFrame.h"
 #include "Ieee1609Dot2Data.h"
 
-
 namespace apsrc_v2x_rosbridge
 {
 class ApsrcV2xRosBridgeNl : public nodelet::Nodelet
@@ -50,7 +49,7 @@ private:
   std::thread udp_server_thread_;
   bool udp_server_running_ = false;
   Ieee1609Dot2Data_t *ieee1609_data_ = 0;
-  const MessageFrame_t *j2735_data_ = 0;
+  MessageFrame_t *j2735_data_ = 0;
   asn_dec_rval_t ieee1609_rval_t_, j2735_rval_t_;
   size_t size_;
   char buffer_[1024];
@@ -105,5 +104,11 @@ private:
   }
 
 };
+
+void printBuffer(uint8_t* buffer) {
+  for (size_t i = 0; i < 10; ++i) {
+    ROS_INFO("Buffer[%zu]: %u", i, buffer[i]);
+  }
+}
 }
 #endif // APSRC_V2X_ROSBRIDGENL_H1
