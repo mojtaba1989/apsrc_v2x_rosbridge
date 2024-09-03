@@ -35,6 +35,7 @@ private:
   bool BasicSafetyMessagePublisher(const MessageFrame_t *j2735_data);
   bool SPaTPublisher(const MessageFrame_t *j2735_data);
   bool MapPublisher(const MessageFrame_t *j2735_data);
+  bool RsaPublisher(const MessageFrame_t *j2735_data);
 
   // Publisher
   ros::Publisher bsm_pub_;

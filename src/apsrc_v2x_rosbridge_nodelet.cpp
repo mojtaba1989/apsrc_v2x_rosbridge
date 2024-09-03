@@ -138,6 +138,11 @@ std::vector<uint8_t> ApsrcV2xRosBridgeNl::handleServerResponse(const std::vector
       ROS_WARN("Failed to publish received MAP...");
     }
     break;
+  case 27:
+    if (!ApsrcV2xRosBridgeNl::RsaPublisher(j2735_data_)){
+      ROS_WARN("Failed to publish received RSA...");
+    }
+    break;
   default:
     ROS_WARN("Failed to identify J2735 message...");
     break;
@@ -329,6 +334,22 @@ bool ApsrcV2xRosBridgeNl::SPaTPublisher(const MessageFrame_t *j2735_data)
     }
   }
   ApsrcV2xRosBridgeNl::spat_pub_.publish(msg);
+  return true;
+}
+
+bool ApsrcV2xRosBridgeNl::RsaPublisher(const MessageFrame_t *j2735_data)
+{
+  apsrc_msgs::BasicSafetyMessage msg = {};
+  msg.header.frame_id = "map";
+  msg.header.stamp = ros::Time::now();
+
+  msg.messageId = j2735_data->messageId;
+  msg.value = "RoadSideAlert";
+
+  msg.BSMCore.Latitude = j2735_data->value.choice.RoadSideAlert.position->lat * 1e-7;
+  msg.BSMCore.Longitude = j2735_data->value.choice.RoadSideAlert.position->Long * 1e-7;
+
+  ApsrcV2xRosBridgeNl::bsm_pub_.publish(msg);
   return true;
 }
 

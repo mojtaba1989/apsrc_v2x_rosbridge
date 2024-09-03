@@ -13,6 +13,8 @@ dataSPaT = b'\x03\x81\x00@\x03\x80x\x00\x13u\x00\x00*\xb3\x01\x00\x00\x05\x00\x1
 
 # dataMAP = "03808201f3001281ef38003000200002004ed28932397d396902dc2058022800000500040dc464051c061312381499a46fc765f8dd8ec451b9519ee36c334606d546d40d8fce181b301e18280e024050116010a0000004000637e78fe86fd76178df7ec231bfc190e37e7b24c1014045806480000040000961d5a1024b5ac702405d2d481f4040880960212000001000025875f858e2d6a9c07f974b920828102002580a480000040000961d3a1b98b5a9702405d2f581ff040780960312000000400005872d88602cd2ac0530203804b01cd000000800022bca73da81581f1fe18ad0af01a655ca882c704060096041a000001000045794e79d62b03a3fc895a13e034cab96105a4080b012c093400000200008af29cf0e65607c7f912b41b405e1572c20ba01014022014840000001161c11e250b50bd022a5a38180f42da9740ac0805a100000004586f47a192d42f407a168e2a03fcb6a7d029a2018840000001161b8deefcb50dd01905a38180e92daa3c0b18806a1000000085aaaf7df62c2514005966bc603a4b03ed010a581b481582c041c0d30807290000000257d9f8a492c008443595fe164788403d8800000022bc6dc3731582b9fb50ad0c0fef655ca07f2d10106200000008af1d70a80560a67f172b42bbfb8157281fd1040458800000022bc7a41f4158275fc30ad0aefeca55ca87f44"
 # dataMAP = bytes.fromhex(dataMAP)
+dataRSA = "0b030f01ac10010c04019800e052534126001b233f51c0dae0000000000000000000000000000000001fffea0036845bed9d7d0f306a60"
+dataRSA = bytes.fromhex(dataRSA)
 
 
 datalist = []
@@ -36,7 +38,8 @@ for arg in commands:
     if not arg in ['--bsm', '-b','--map',
                     '-m','--spat', '-s',
                     '--iter', '-i',
-                    '--freq', '-f'] :
+                    '--freq', '-f',
+                    '--rsa', '-r'] :
         print("bad argument")
         exit(1)
 
@@ -54,6 +57,11 @@ for idx, arg in enumerate(sys.argv):
 for idx, arg in enumerate(sys.argv):
     if arg in ['--spat', '-s']:
         dataset('SPat', dataSPaT)
+        del sys.argv[idx]
+
+for idx, arg in enumerate(sys.argv):
+    if arg in ['--rsa', '-r']:
+        dataset('RSA', dataRSA)
         del sys.argv[idx]
 
 for idx, arg in enumerate(sys.argv):
