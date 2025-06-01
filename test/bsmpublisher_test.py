@@ -1,5 +1,4 @@
 import struct
-import hexdump
 import socket
 import time
 import numpy as np
@@ -96,6 +95,7 @@ while current_iter < max_iter:
     try:
         i = np.random.randint(0, len(datalist))
         print(datalist[i].name)
+        print(bytes.hex(datalist[i].data))
         sock.sendto(datalist[i].data, (UDP_IP, UDP_PORT))
         time.sleep(1/freq)
         if (iter_flag):

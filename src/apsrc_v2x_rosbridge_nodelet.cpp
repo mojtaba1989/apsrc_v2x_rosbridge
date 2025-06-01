@@ -55,6 +55,7 @@ void ApsrcV2xRosBridgeNl::loadParams()
 {
   pnh_.param<std::string>("server_ip", server_ip_, "127.0.0.1");
   pnh_.param("server_port", server_port_, 1551); 
+  pnh_.param("skip_1609", skip_1609_, false);
   ROS_INFO("Parameters Loaded");
 }
 
@@ -82,6 +83,41 @@ std::vector<uint8_t> ApsrcV2xRosBridgeNl::handleServerResponse(const std::vector
               buffer_);
   } else {
     ROS_WARN("Received UDP is larger than buffer! (max size 1024 bytes)");
+    return returned_msg;
+  }
+
+  if (skip_1609_){
+    j2735_rval_t_ = uper_decode(0, &asn_DEF_MessageFrame, (void **)&j2735_data_, buffer_, received_payload.size(), 0, 0);
+    if (j2735_rval_t_.code != RC_OK){
+      ROS_WARN("Broken J2735 encoding at byte %ld", (long)j2735_rval_t_.consumed);
+      return returned_msg;
+    }
+    switch (j2735_data_->messageId)
+    {
+    case 20:
+      if (!ApsrcV2xRosBridgeNl::BasicSafetyMessagePublisher(j2735_data_)){
+        ROS_WARN("Failed to publish received Basic Safety Message...");
+      }
+      break;
+    case 19:
+      if (!ApsrcV2xRosBridgeNl::SPaTPublisher(j2735_data_)){
+        ROS_WARN("Failed to publish received SPaT...");
+      }
+      break;
+    case 18:
+      if (!ApsrcV2xRosBridgeNl::MapPublisher(j2735_data_)){
+        ROS_WARN("Failed to publish received MAP...");
+      }
+      break;
+    case 27:
+      if (!ApsrcV2xRosBridgeNl::RsaPublisher(j2735_data_)){
+        ROS_WARN("Failed to publish received RSA...");
+      }
+      break;
+    default:
+      ROS_WARN("Failed to identify J2735 message...");
+      break;
+    }
     return returned_msg;
   }
 

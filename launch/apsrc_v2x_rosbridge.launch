@@ -3,10 +3,12 @@
   <arg name="ip" default="127.0.0.1"/>
   <arg name="port" default="1551"/>
   <arg name="visualization" default="false"/>
+  <arg name="skip_1609" default="false"/>
 
   <node name="$(arg node_name)" pkg="apsrc_v2x_rosbridge" type="apsrc_v2x_rosbridge_node" output="screen">
     <param name="server_ip" value="$(arg ip)"/>
     <param name="server_port" value="$(arg port)"/>
+    <param name="skip_1609" value="$(arg skip_1609)"/>
   </node>
 
   <node if="$(arg visualization)" name="v2x_viz" pkg="apsrc_v2x_viz" type="apsrc_v2x_viz_node"/>

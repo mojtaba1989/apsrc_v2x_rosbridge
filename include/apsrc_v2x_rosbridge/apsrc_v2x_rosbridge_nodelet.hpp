@@ -58,7 +58,8 @@ private:
   // Params
   std::string server_ip_;
   int server_port_;
-
+  bool skip_1609_ = false;
+  
   // Plugins
   std::string bufferToHex(const unsigned char* buffer, std::size_t size)
   {
